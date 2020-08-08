@@ -18,7 +18,7 @@ public class StarOptionsCalculator {
     private static final int BD1 = 21, BD2 = 22, BD3 = 3, BD4 = 4;
 
     // Resort Codes: SDO, WKV, WDW, WMH, SLT, SMV, WRM, SSR, SVR, SVV, SPV,
-    //               VBC, WPO, SKR, WKO, WKN, WNO, SBP, WLO, WRC, WLC, HRA, WSJ.
+    //               VBC, WPO, SKR, WKO, WKN, WNO, SBP, WLO, WRC, WLC, HRA, WSJ...
 
     // StarOptions Values Class ---------------------------------------------------------------------------[VALUE CLASS]
     static class Values {
