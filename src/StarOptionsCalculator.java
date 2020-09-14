@@ -1,331 +1,350 @@
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 
-public class StarOptionsCalculator {
+class StarOptionsCalculator {
 
     enum ResortCode {
-        HARBORSIDE_ATLANTIS,
-        SHERATON_BROADWAY,
-        SHERATON_DESERT,
-        SHERATON_KAUAI,
-        SHERATON_LAKESIDE,
-        SHERATON_MOUNTAIN,
-        SHERATON_PGA,
-        SHERATON_STEAMBOAT,
-        VISTANA_BEACH,
-        VISTANA_RESORT,
-        VISTANA_VILLAGES,
-        WESTIN_CABOS,
-        WESTIN_CANCUN,
-        WESTIN_DESERT,
-        WESTIN_KAANAPALI,
-        WESTIN_KAANAPALI_NORTH,
-        WESTIN_KIERLAND,
-        WESTIN_LAGUNAMAR,
-        WESTIN_MISSION,
-        WESTIN_NANEA,
-        WESTIN_PRINCEVILLE,
-        WESTIN_RIVERFRONT,
-        WESTIN_STJOHN;
-    }
+        HARBORSIDE_ATLANTIS, SHERATON_BROADWAY, SHERATON_DESERT, SHERATON_KAUAI, SHERATON_LAKESIDE,
+        SHERATON_MOUNTAIN, SHERATON_PGA, SHERATON_STEAMBOAT, VISTANA_BEACH, VISTANA_RESORT,
+        VISTANA_VILLAGES, WESTIN_CABOS, WESTIN_CANCUN, WESTIN_DESERT, WESTIN_KAANAPALI,
+        WESTIN_KAANAPALI_NORTH, WESTIN_KIERLAND, WESTIN_LAGUNAMAR, WESTIN_MISSION,
+        WESTIN_NANEA, WESTIN_PRINCEVILLE, WESTIN_RIVERFRONT, WESTIN_STJOHN;
 
-    enum RoomTypeConstant {
-        ONE_BEDROOM, TWO_BEDROOM, THREE_BEDROOM, FOUR_BEDROOM
-    }
-
-    enum SeasonValueConstant {
-        PLATINUM_PLUS, PLATINUM, GOLD_PLUS, GOLD, SILVER
-    }
-
-    String getRoomTypeInText(RoomTypeConstant roomType) {
-        switch (roomType) {
-            case ONE_BEDROOM:
-                return "1-Bedroom";
-            case TWO_BEDROOM:
-                return "2-Bedroom";
-            case THREE_BEDROOM:
-                return "3-Bedroom";
-            case FOUR_BEDROOM:
-                return "4-Bedroom";
-            default:
-                return "";
-        }
-    }
-
-    String getSeasonInText(SeasonValueConstant seasonOfRoom) {
-        switch (seasonOfRoom) {
-            case PLATINUM_PLUS:
-                return "Platinum+";
-            case PLATINUM:
-                return "Platinum";
-            case GOLD_PLUS:
-                return "Gold+";
-            case GOLD:
-                return "Gold";
-            case SILVER:
-                return "Silver";
-            default:
-                return "";
-        }
-    }
-
-
-    private class StarOptionValues {
-        private int[] starOptionValues = new int[3];
-        private SeasonValueConstant seasonOfRoom;
-
-        StarOptionValues(SeasonValueConstant season, int mondayToWednesdayValue, int thursdayAndSundayValue, int fridayAndSaturdayValue) {
-            seasonOfRoom = season;
-            starOptionValues[0] = mondayToWednesdayValue;
-            starOptionValues[1] = thursdayAndSundayValue;
-            starOptionValues[2] = fridayAndSaturdayValue;
-        }
-
-        int getValueOf(DayOfWeek day) {
-            switch (day) {
-                case MONDAY:
-                case TUESDAY:
-                case WEDNESDAY:
-                    return starOptionValues[0];
-                case THURSDAY:
-                case SUNDAY:
-                    return starOptionValues[1];
-                case FRIDAY:
-                case SATURDAY:
-                    return starOptionValues[2];
-                default:
-                    return 0;
-            }
-        }
-
-        SeasonValueConstant getSeason() { return seasonOfRoom; }
-    }
-
-
-    private class Room {
-        private RoomTypeConstant roomType;
-        private String roomDescription;
-        private StarOptionValues[] starOptions;
-
-        Room(RoomTypeConstant typeOfRoom, String descriptionOfRoom) {
-            roomType = typeOfRoom;
-            roomDescription = descriptionOfRoom;
-        }
-
-        RoomTypeConstant getRoomType() { return roomType; }
-
-        String getRoomDescription() { return roomDescription; }
-
-        int getAmountOfSeasonsForRoom() { return starOptions.length; }
-
-        void setStarOptions(StarOptionValues[] loadedValueChart) { starOptions = loadedValueChart; }
-    }
-
-
-    private class Phase {
-        private String phaseName;
-        private int[] weeksCalendar;
-        private SeasonValueConstant[] seasonsCalendar;
-        private Room[] roomList;
-
-        Phase(String nameOfPhase) {
-            phaseName = nameOfPhase;
-        }
-
-        String getPhaseName() { return phaseName; }
-
-        int getRoomListLength() { return roomList.length; }
-
-        private SeasonValueConstant GetSeasonValueOfWeek(int week) {
-            int i = 0;
-            do {
-                if (weeksCalendar[i] < week) {
-                    i++;
-                }
-            } while (weeksCalendar[i] >= week);
-            return seasonsCalendar[i / 2];
-        }
-
-        String getSeasonOfWeekInText(int week) {
-            SeasonValueConstant seasonValueOfWeek = GetSeasonValueOfWeek(week);
-            return getSeasonInText(seasonValueOfWeek);
-        }
-
-        int getAmountOfSeasonsInPhase() {
-            int seasonCounter = 0;
-            boolean isTherePlatinumPlusSeasonInPhase = false;
-            boolean isTherePlatinumSeasonInPhase = false;
-            boolean isThereGoldPlusSeasonInPhase = false;
-            boolean isThereGoldSeasonInPhase = false;
-            boolean isThereSilverSeasonInPhase = false;
-
-            for (SeasonValueConstant seasonValueConstant : seasonsCalendar) {
-                switch (seasonValueConstant) {
-                    case PLATINUM_PLUS:
-                        isTherePlatinumPlusSeasonInPhase = true;
-                        break;
-                    case PLATINUM:
-                        isTherePlatinumSeasonInPhase = true;
-                        break;
-                    case GOLD_PLUS:
-                        isThereGoldPlusSeasonInPhase = true;
-                        break;
-                    case GOLD:
-                        isThereGoldSeasonInPhase = true;
-                        break;
-                    case SILVER:
-                        isThereSilverSeasonInPhase = true;
-                        break;
-                }
-            }
-
-            if (isTherePlatinumPlusSeasonInPhase) { seasonCounter++; }
-            if (isTherePlatinumSeasonInPhase) { seasonCounter++; }
-            if (isThereGoldPlusSeasonInPhase) { seasonCounter++; }
-            if (isThereGoldSeasonInPhase) { seasonCounter++; }
-            if (isThereSilverSeasonInPhase) { seasonCounter++; }
-
-            return seasonCounter;
-        }
-
-        void setRoomList(Room[] loadedRoomList) {
-            roomList = loadedRoomList;
-        }
-
-        void setWeeksCalendar(int[] loadedWeeksCalendar) {
-            weeksCalendar = loadedWeeksCalendar;
-        }
-
-        void setSeasonsCalendar(SeasonValueConstant[] loadedSeasonsCalendar) {
-            seasonsCalendar = loadedSeasonsCalendar;
-        }
-    }
-
-    private class Resort {
-        private String resortName, resortLocation;
-        private Phase[] resortPhases;
-
-        Resort(ResortCode ResortKeyword) {
-            setResortDetails(ResortKeyword);
-        }
-
-        String setResortDetails(ResortCode ResortKeyword) {
-            int amountOfPhasesInResort = 1;
-            switch (ResortKeyword) {
+        private static String displayResortText(ResortCode resortCode) {
+            switch(resortCode) {
                 case HARBORSIDE_ATLANTIS:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "HARBORSIDE RESORT AT ATLANTIS";
                 case SHERATON_BROADWAY:
-                    resortName = "";
-                    resortLocation = "";
-                    amountOfPhasesInResort = 2;
-                    break;
+                    return "SHERATON BROADWAY PLANTATION";
                 case SHERATON_DESERT:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON DESERT OASIS";
                 case SHERATON_KAUAI:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON KAUA‘I RESORT";
                 case SHERATON_LAKESIDE:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON LAKESIDE TERRACE VILLAS AT MOUNTAIN VISTA ";
                 case SHERATON_MOUNTAIN:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON MOUNTAIN VISTA";
                 case SHERATON_PGA:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON PGA VACATION RESORT";
                 case SHERATON_STEAMBOAT:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON STEAMBOAT RESORT VILLAS";
                 case VISTANA_BEACH:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "VISTANA BEACH CLUB";
                 case VISTANA_RESORT:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON VISTANA RESORT";
                 case VISTANA_VILLAGES:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "SHERATON VISTANA VILLAGES";
                 case WESTIN_CABOS:
-                    resortName = "";
-                    resortLocation = "";
-                    amountOfPhasesInResort = 2;
-                    break;
+                    return "THE WESTIN LOS CABOS RESORT VILLAS & SPA";
                 case WESTIN_CANCUN:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN RESORT & SPA, CANCÚN";
                 case WESTIN_DESERT:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN DESERT WILLOW VILLAS, PALM DESERT";
                 case WESTIN_KAANAPALI:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN KĀ‘ANAPALI OCEAN RESORT VILLAS";
                 case WESTIN_KAANAPALI_NORTH:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN KĀ‘ANAPALI OCEAN RESORT VILLAS NORTH";
                 case WESTIN_KIERLAND:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN KIERLAND VILLAS";
                 case WESTIN_LAGUNAMAR:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN LAGUNAMAR OCEAN RESORT";
                 case WESTIN_MISSION:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN MISSION HILLS RESORT VILLAS, PALM SPRINGS";
                 case WESTIN_NANEA:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN NANEA OCEAN VILLAS";
                 case WESTIN_PRINCEVILLE:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN PRINCEVILLE OCEAN RESORT VILLAS";
                 case WESTIN_RIVERFRONT:
-                    resortName = "";
-                    resortLocation = "";
-                    break;
+                    return "THE WESTIN RIVERFRONT MOUNTAIN VILLAS";
                 case WESTIN_STJOHN:
-                    resortName = "";
-                    resortLocation = "";
-                    amountOfPhasesInResort = 4;
-                    break;
+                    return "THE WESTIN ST. JOHN RESORT VILLAS";
                 default:
-                    throw new IllegalStateException("Unexpected value: " + ResortKeyword);
+                    throw new IllegalStateException("Unexpected value: " + resortCode);
             }
-            setAmountOfResortPhases(amountOfPhasesInResort);
+        }
+    }
 
+    enum RoomType {
+        ONE_BD, TWO_BD, THREE_BD, FOUR_BD;
+
+        private static String displayVillaText(RoomType villaSize) {
+            switch(villaSize){
+                case ONE_BD:
+                    return "1-Bedroom";
+                case TWO_BD:
+                    return "2-Bedroom";
+                case THREE_BD:
+                    return "3-Bedroom";
+                case FOUR_BD:
+                    return "4-Bedroom";
+                default:
+                    throw new IllegalStateException("Unexpected value: " + villaSize);
+            }
+        }
+    }
+
+    enum Season {
+        PLATINUM_PLUS, PLATINUM, GOLD_PLUS, GOLD, SILVER;
+
+        private static String displaySeasonText(Season villaSeason) {
+            switch(villaSeason){
+                case PLATINUM_PLUS:
+                    return "Platinum+";
+                case PLATINUM:
+                    return "Platinum";
+                case GOLD_PLUS:
+                    return "Gold+";
+                case GOLD:
+                    return "Gold";
+                case SILVER:
+                    return "Silver";
+                default:
+                    throw new IllegalStateException("Unexpected value: " + villaSeason);
+            }
+        }
+    }
+
+    private static LocalDate setBeginDateOfYear(int chosenYear) {
+        return LocalDate.of(chosenYear, 1, 1);
+    }
+
+    private static LocalDate setFirstFridayOfYear(int chosenYear) {
+
+        LocalDate beginDate = setBeginDateOfYear(chosenYear);
+
+        while (beginDate.getDayOfWeek() != DayOfWeek.FRIDAY) {
+            beginDate = beginDate.plusDays(1);
+        }
+        return beginDate;
+    }
+
+    private static int getWeekNumberOfDate(LocalDate chosenDate) {
+
+        int weekCounter = 0;
+        LocalDate beginDate = setFirstFridayOfYear(chosenDate.getYear());
+
+        if (chosenDate.isBefore(beginDate)) {
+            beginDate = setFirstFridayOfYear(chosenDate.getYear() - 1);
         }
 
-        void setAmountOfResortPhases(int amountOfResortPhases) {
-            resortPhases = new Phase[amountOfResortPhases];
+        while (beginDate.isBefore(chosenDate) || beginDate.isEqual(chosenDate)) {
+            weekCounter++;
+            beginDate = beginDate.plusWeeks(1);
         }
+
+        return weekCounter;
+    }
+
+    private static boolean doesYearHas53Weeks(int chosenYear) {
+
+        int weekCounter = 0;
+        LocalDate beginDate = setFirstFridayOfYear(chosenYear);
+        LocalDate targetDate = setBeginDateOfYear(chosenYear + 1);
+
+        while (beginDate.isBefore(targetDate)) {
+            weekCounter++;
+            //System.out.println("Week of: " + beginDate.toString() + " is week #" + weekCounter);
+            beginDate = beginDate.plusWeeks(1);
+        }
+        return weekCounter == 53;
+    }
+
+    private static class Villa {
+        private final String villaDescription;
+        private final RoomType villaSize;
+        private final int[][] starOptionValues;
+        private final Season[] seasonsInVilla;
+
+        private Villa(RoomType amountOfBedrooms, String villaDetails, int[][] starOptionsChart, Season[] villaSeasons) {
+            this.villaDescription = villaDetails;
+            this.villaSize = amountOfBedrooms;
+            this.starOptionValues = starOptionsChart;
+            this.seasonsInVilla = villaSeasons;
+        }
+
+        private void displayVillaDetails(){
+            System.out.println("Villa description: " + this.villaDescription);
+            System.out.println("Villa type: " + RoomType.displayVillaText(this.villaSize));
+            for (int i = 0 ; i < this.starOptionValues.length ; i++) {
+                System.out.print(Season.displaySeasonText(seasonsInVilla[i]) + ": ");
+                for (int j = 0 ; j < this.starOptionValues[i].length ; j++) {
+                    System.out.print(this.starOptionValues[i][j] + ", ");
+                }
+                System.out.println();
+            }
+        }
+    }
+
+    public static class Phase {
+        private final String phaseName;
+        private final Season[] phaseSeasons;
+        private final int[][] phaseWeeks;
+        private final Villa[] phaseVillas;
+
+        private Phase(String nameOfPhase, Season[] seasonsInPhase, int[][] weeksInPhase, Villa[] villasInPhase) {
+            this.phaseName = nameOfPhase;
+            this.phaseSeasons = seasonsInPhase;
+            this.phaseWeeks = weeksInPhase;
+            this.phaseVillas = villasInPhase;
+        }
+
+        private Season getSeasonOfPhase(int weekNumber) {
+            Season result = null;
+            if (weekNumber == 53)
+                weekNumber = 52;
+
+            for (int i = 0 ; i < this.phaseWeeks.length ; i++) {
+                for (int j = 0 ; j < this.phaseWeeks[i].length ; j = j + 2) {
+                    if (weekNumber >= this.phaseWeeks[i][j] && weekNumber <= this.phaseWeeks[i][j+1]) {
+                        result = this.phaseSeasons[i];
+                        return result;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void displayPhaseDetails(){
+            System.out.println("Phase name is: " + this.phaseName);
+            System.out.print("Seasons in phase are: ");
+            for (int i = 0 ; i < this.phaseSeasons.length ; i++) {
+                System.out.print(Season.displaySeasonText(phaseSeasons[i]) + ": ");
+                for (int j = 0 ; j < this.phaseWeeks[i].length ; j++) {
+                    if (j + 1 == this.phaseWeeks[i].length)
+                        System.out.print(this.phaseWeeks[i][j] + ".");
+                    else
+                        System.out.print(this.phaseWeeks[i][j] + ",");
+                }
+                System.out.println();
+            }
+            System.out.println();
+
+            for (Villa phaseVilla : this.phaseVillas) {
+                phaseVilla.displayVillaDetails();
+            }
+        }
+    }
+
+    public static class Resort{
+
+        private final String resortName;
+        private final String resortLocation;
+        private final Phase[] resortPhases;
+
+        private Resort(ResortCode resortKeyword) {
+
+            String[] namesOfPhases;
+            Season[][] seasonsOfPhases;
+            int[][][] weeksOfPhases;
+
+            int[][] starOptionsBuilder;
+            Villa[] villaBuilder;
+            Phase[] phaseBuilder;
+
+            this.resortName = ResortCode.displayResortText(resortKeyword);
+
+            switch(resortKeyword) {
+                case VISTANA_BEACH: {
+                    this.resortLocation = "Jensen Beach, Florida";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{
+                            "Main Phase"
+                    };
+                    seasonsOfPhases = new Season[][]{
+                            {Season.PLATINUM, Season.GOLD}
+                    };
+                    weeksOfPhases = new int[][][]{{
+                            {1, 17, 24, 35, 46, 47, 50, 52},{18, 23, 36, 45, 48, 49}
+                    }};
+
+                    villaBuilder = new Villa[1];
+                    starOptionsBuilder = new int[][]{
+                            {  8100,  12150,  16200},
+                            {  6700,  10075,  13425}};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + resortKeyword);
+            }
+            this.resortPhases = phaseBuilder;
+        }
+
+        private void displayResortDetails(){
+            System.out.println("Resort: " + this.resortName + ", located in " + this.resortLocation);
+            for (Phase resortPhase : this.resortPhases) {
+                resortPhase.displayPhaseDetails();
+            }
+        }
+    }
+
+    public static class ReservationQuery {
+
+        private final ResortCode chosenResort;
+        private final LocalDate chosenCheckInDate;
+        private final int chosenNumberOfNights;
+        private final RoomType chosenTypeOfRoom;
+
+        private ReservationQuery(ResortCode resortChosen, LocalDate checkInDateChosen, int numberOfNightsChosen, RoomType typeOfRoomChosen) {
+            chosenResort = resortChosen;
+            chosenCheckInDate = checkInDateChosen;
+            chosenNumberOfNights = numberOfNightsChosen;
+            chosenTypeOfRoom = typeOfRoomChosen;
+        }
+
+        private ResortCode getChosenResort() { return chosenResort; }
+
+        private LocalDate getChosenCheckInDate() { return chosenCheckInDate; }
+
+        private int getChosenNumberOfNights() { return chosenNumberOfNights; }
+
+        private RoomType getChosenTypeOfRoom() { return chosenTypeOfRoom; }
+    }
+
+    public static class SearchResult {
+
+        ResortCode selectedResortName;
+        RoomType selectedTypeOfRoom;
+        LocalDate selectedCheckInDate;
+        int selectedNumberOfNights;
+        int[] totalStarOptionValues;
+        Season[] totalSeasonValues;
+
+        private SearchResult(ReservationQuery query) {
+
+            selectedResortName = query.getChosenResort();
+            selectedCheckInDate = query.getChosenCheckInDate();
+            selectedNumberOfNights = query.getChosenNumberOfNights();
+            selectedTypeOfRoom = query.getChosenTypeOfRoom();
+            totalStarOptionValues = new int[query.getChosenNumberOfNights()];
+        }
+    }
+
+    public static void main(String[] args) {
+        ArrayList<SearchResult> searchResultsList = new ArrayList<SearchResult>();
+
+        ReservationQuery newQuery = new ReservationQuery(ResortCode.VISTANA_BEACH,
+                LocalDate.of(2022, 1, 7),7, RoomType.TWO_BD);
+
+        Resort resortTest = new Resort(newQuery.chosenResort);
+        resortTest.displayResortDetails();
+
+        System.out.println("Year tested is " + newQuery.chosenCheckInDate.getYear());
+        if (doesYearHas53Weeks(newQuery.chosenCheckInDate.getYear()))
+            System.out.println("has 53 weeks.");
+        else
+            System.out.println("does not have 53 weeks.");
+
+        System.out.println("Week number for " + newQuery.chosenCheckInDate.toString() + " is...");
+        System.out.println(getWeekNumberOfDate(newQuery.chosenCheckInDate));
+
+        Season result = resortTest.resortPhases[0].getSeasonOfPhase(getWeekNumberOfDate(newQuery.getChosenCheckInDate()));
+        System.out.println("Season of " + newQuery.getChosenCheckInDate().toString() + " is " + result + ".");
+    }
+}
 
         /*Resort(String resortCode) {
 
@@ -1616,6 +1635,8 @@ public class StarOptionsCalculator {
             }
         }*/
 
+
+        /*
         String getResortName() {
             return resortName;
         }
@@ -1658,15 +1679,19 @@ public class StarOptionsCalculator {
                 }
             }
         }*/
-    }
+    /*}
+
+
+
+
 
     protected class searchQuery {
         String chosenResort;
         LocalDate chosenCheckInDate;
         int chosenNumberOfNights;
-        RoomTypeConstant chosenTypeOfRoom;
+        RoomType chosenTypeOfRoom;
 
-        searchQuery(String resort, LocalDate checkInDate, int numberOfNights, RoomTypeConstant typeOfRoom) {
+        searchQuery(String resort, LocalDate checkInDate, int numberOfNights, RoomType typeOfRoom) {
             chosenResort = resort;
             chosenCheckInDate = checkInDate;
             chosenNumberOfNights = numberOfNights;
@@ -1679,17 +1704,17 @@ public class StarOptionsCalculator {
 
         private int getChosenNumberOfNights() { return chosenNumberOfNights; }
 
-        private RoomTypeConstant getChosenTypeOfRoom() { return chosenTypeOfRoom; }
+        private RoomType getChosenTypeOfRoom() { return chosenTypeOfRoom; }
     }
 
 
     protected class searchResult {
         String selectedResortName;
-        RoomTypeConstant selectedTypeOfRoom;
+        RoomType selectedTypeOfRoom;
         LocalDate selectedCheckInDate;
         int selectedNumberOfNights;
         int[] totalStarOptionValues;
-        SeasonValueConstant[] totalSeasonValues;
+        Season[] totalSeasonValues;
 
         searchResult(searchQuery query) {
             selectedResortName = query.getChosenResort();
@@ -1709,9 +1734,12 @@ public class StarOptionsCalculator {
                         this.checkInDate.plusDays(this.numberOfNights) + " for a total of " + this.numberOfNights +
                         " nights on a " + typeOfRoom + " would cost " + this.totalStarOptions() + " StarOptions.");
             }*/
-        }
+       /*  }
 
         // End of Classes ---------------------------------------------------------------------------------------------
+
+
+
 
         public static void main(String[] args) {
             ArrayList<searchResult> searchResultsList = new ArrayList<searchResult>();
@@ -1999,3 +2027,5 @@ public class StarOptionsCalculator {
             }
         }
     }
+
+    */
