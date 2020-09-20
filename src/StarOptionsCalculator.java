@@ -11,9 +11,8 @@ class  StarOptionsCalculator {
 
     static private final int MIN_NIGHT_SEARCH = 1;
     static private final int MAX_NIGHT_SEARCH = 21;
-    static private final int EARLIEST_YR_FOR_SEARCH = 2000;
-    static private final int LATEST_YR_FOR_SEARCH = 2031;
-
+    static private final int EARLIEST_YR_FOR_SEARCH = 2020;
+    static private final int LATEST_YR_FOR_SEARCH = 2026;
     static private final String DEFAULT_PHASE_NAME = "Main Phase";
 
     enum ResortCode {
@@ -138,7 +137,7 @@ class  StarOptionsCalculator {
     }
 
     private static LocalDate setBeginDateOfYear(int chosenYear) {
-        if (chosenYear > 0 && chosenYear < 3000)
+        if (chosenYear >= EARLIEST_YR_FOR_SEARCH - 1 && chosenYear <= LATEST_YR_FOR_SEARCH)
             return LocalDate.of(chosenYear, 1, 1);
         else
             throw new IllegalStateException("Invalid Year: " + chosenYear);
@@ -219,18 +218,6 @@ class  StarOptionsCalculator {
             }
             return starOptionValue;
         }
-
-        private void displayVillaDetails(){
-            System.out.println("Villa description: " + this.villaDescription);
-            System.out.println("Villa type: " + RoomType.getVillaText(this.villaSize));
-            for (int i = 0 ; i < this.starOptionValues.length ; i++) {
-                System.out.print(Season.displaySeasonText(seasonsInVilla[i]) + ": ");
-                for (int j = 0 ; j < this.starOptionValues[i].length ; j++) {
-                    System.out.print(this.starOptionValues[i][j] + ", ");
-                }
-                System.out.println();
-            }
-        }
     }
 
     public static class Phase {
@@ -265,33 +252,13 @@ class  StarOptionsCalculator {
             }
             return result;
         }
-
-        private void displayPhaseDetails(){
-            System.out.println("Phase name is: " + this.phaseName);
-            System.out.print("Seasons in phase are: ");
-            for (int i = 0 ; i < this.phaseSeasons.length ; i++) {
-                System.out.print(Season.displaySeasonText(phaseSeasons[i]) + ": ");
-                for (int j = 0 ; j < this.phaseWeeks[i].length ; j++) {
-                    if (j + 1 == this.phaseWeeks[i].length)
-                        System.out.print(this.phaseWeeks[i][j] + ".");
-                    else
-                        System.out.print(this.phaseWeeks[i][j] + ",");
-                }
-                System.out.println();
-            }
-            System.out.println();
-
-            for (Villa phaseVilla : this.phaseVillas) {
-                phaseVilla.displayVillaDetails();
-            }
-        }
     }
 
     public static class Resort{
 
-        private final String resortName;
-        private final String resortLocation;
-        private final Phase[] resortPhases;
+        private String resortName;
+        private String resortLocation;
+        private Phase[] resortPhases;
 
         private Resort(ResortCode resortKeyword) {
 
@@ -301,11 +268,342 @@ class  StarOptionsCalculator {
 
             int[][] starOptionsBuilder;
             Villa[] villaBuilder;
-            Phase[] phaseBuilder;
+            Phase[] phaseBuilder = new Phase[1];
 
             this.resortName = ResortCode.getResortText(resortKeyword);
 
             switch(resortKeyword) {
+                case HARBORSIDE_ATLANTIS: {
+                    this.resortLocation = "Paradise Island, The Bahamas";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS}};
+                    weeksOfPhases = new int[][][]{{{1, 17, 50, 52}, {18, 34, 47, 49}, {35, 46}}};
+                    villaBuilder = new Villa[5];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(125000),
+                            getWeekValuesFor(104100)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(129800),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100)};
+                    villaBuilder[2] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[4] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case SHERATON_BROADWAY: {
+                    this.resortLocation = "Myrtle Beach, South Carolina";
+                    phaseBuilder = new Phase[2];
+                    namesOfPhases = new String[]{"Plantation", "Palmetto"};
+                    seasonsOfPhases = new Season[][]{
+                            {Season.GOLD_PLUS, Season.GOLD, Season.SILVER},
+                            {Season.PLATINUM, Season.GOLD_PLUS, Season.GOLD, Season.SILVER}
+                    };
+                    weeksOfPhases = new int[][][]{
+                            {{9, 43, 47, 47}, {1, 1, 7, 8, 44, 46, 48, 48, 51, 52}, {2, 6, 49, 50}},
+                            {{24, 35}, {15, 23, 36, 42}, {10, 14, 43, 52}, {1, 9}}
+                    };
+                    villaBuilder = new Villa[4];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(56300),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(30500),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(25800),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+
+                    villaBuilder = new Villa[5];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(125000),
+                            getWeekValuesFor(104100),
+                            getWeekValuesFor(69800),
+                            getWeekValuesFor(57700)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[1]);
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(56300),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[1]);
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[2] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[1]);
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(30500),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[1]);
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(25800),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[4] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[1]);
+                    phaseBuilder[1] = new Phase(namesOfPhases[1], seasonsOfPhases[1], weeksOfPhases[1], villaBuilder);
+
+                }
+                break;
+                case SHERATON_DESERT:
+                case WESTIN_KIERLAND: {
+                    this.resortLocation = "Scottsdale, Arizona";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS, Season.GOLD}};
+                    weeksOfPhases = new int[][][]{{{1, 21, 50, 52}, {22, 27, 36, 49}, {28, 35}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(56300)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(30500)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case SHERATON_KAUAI: {
+                    this.resortLocation = "Koloa, Kaua'i, Hawai'i";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS}};
+                    weeksOfPhases = new int[][][]{{{1, 52}}};
+                    villaBuilder = new Villa[4];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "Studio", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case SHERATON_LAKESIDE: {
+                    this.resortLocation = "Avon, Colorado";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS, Season.SILVER}};
+                    weeksOfPhases = new int[][][]{{{1, 15, 48, 52}, {21, 39}, {16, 20, 40, 47}}};
+                    villaBuilder = new Villa[1];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(129800),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case SHERATON_MOUNTAIN: {
+                    this.resortLocation = "Avon, Colorado";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS, Season.SILVER}};
+                    weeksOfPhases = new int[][][]{{{1, 15, 48, 52}, {21, 39}, {16, 20, 40, 47}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case SHERATON_PGA: {
+                    this.resortLocation = "Port St. Lucie, Florida";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.GOLD_PLUS, Season.GOLD, Season.SILVER}};
+                    weeksOfPhases = new int[][][]{{{1, 17, 40, 47, 51, 52}, {18, 34}, {35, 39, 48, 50}}};
+                    villaBuilder = new Villa[4];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(56300),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(30500),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(25800),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case SHERATON_STEAMBOAT: {
+                    this.resortLocation = "Steamboat Springs, Colorado";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.SILVER}
+                    };
+                    weeksOfPhases = new int[][][]{{
+                            {1, 15, 48, 52}, {21, 39}, {16, 20, 40, 47}
+                    }};
+                    villaBuilder = new Villa[12];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(296200),
+                            getWeekValuesFor(191400),
+                            getWeekValuesFor(93000)};
+                    villaBuilder[0] = new Villa(RoomType.FOUR_BD, "Four-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(215200),
+                            getWeekValuesFor(139700),
+                            getWeekValuesFor(67200)};
+                    villaBuilder[1] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(257700),
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(57700)};
+                    villaBuilder[2] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff (Mountain Side)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(125000),
+                            getWeekValuesFor(57700)};
+                    villaBuilder[3] = new Villa(RoomType.THREE_BD, "Three-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[4] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff (Mountain Side)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[5] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[6] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[7] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium (Mountain Side)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[8] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[9] = new Villa(RoomType.ONE_BD, "Studio Villa (Mountain Side)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[10] = new Villa(RoomType.ONE_BD, "Studio Villa", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(50000),
+                            getWeekValuesFor(30000),
+                            getWeekValuesFor(15000)};
+                    villaBuilder[11] = new Villa(RoomType.ONE_BD, "Hotel Room", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
                 case VISTANA_BEACH: {
                     this.resortLocation = "Jensen Beach, Florida";
                     phaseBuilder = new Phase[1];
@@ -328,73 +626,534 @@ class  StarOptionsCalculator {
                     phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
                 }
                 break;
+                case VISTANA_RESORT: {
+                    this.resortLocation = "Orlando, Florida";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM, Season.GOLD_PLUS}};
+                    weeksOfPhases = new int[][][]{{{6, 17, 23, 34, 39, 47, 51, 52},{1, 5, 18, 22, 35, 38, 48, 50}}};
+
+                    villaBuilder = new Villa[4];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case VISTANA_VILLAGES: {
+                    this.resortLocation = "Orlando, Florida";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM, Season.GOLD_PLUS}};
+                    weeksOfPhases = new int[][][]{{{6, 17, 23, 34, 39, 47, 51, 52},{1, 5, 18, 22, 35, 38, 48, 50}}};
+
+                    villaBuilder = new Villa[6];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(139700),
+                            getWeekValuesFor(118000)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff (1BD Premium + Two 1BD)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(125000),
+                            getWeekValuesFor(104100)};
+                    villaBuilder[1] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff (2BD + 1BD)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000)};
+                    villaBuilder[2] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100)};
+                    villaBuilder[3] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[4] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[5] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_CABOS: {
+                    this.resortLocation = "Los Cabos, Mexico";
+                    phaseBuilder = new Phase[2];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME, "Baja Point"};
+                    seasonsOfPhases = new Season[][]{
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS},
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS}
+                    };
+                    weeksOfPhases = new int[][][]{
+                            {{1, 23, 44, 52}, {24, 33, 41, 43}, {34, 40}},
+                            {{1, 23, 44, 52}, {24, 33, 41, 43}, {34, 40}}
+                    };
+                    villaBuilder = new Villa[6];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(310900),
+                            getWeekValuesFor(243800),
+                            getWeekValuesFor(169700)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Governor's Suite Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(243800),
+                            getWeekValuesFor(192100),
+                            getWeekValuesFor(132700)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Governor's Suite", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(215200),
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(118000)};
+                    villaBuilder[2] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
+                    villaBuilder[3] = new Villa(RoomType.TWO_BD, "Two-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(125000),
+                            getWeekValuesFor(81000)};
+                    villaBuilder[4] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[5] = new Villa(RoomType.ONE_BD, "Studio", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+
+                    villaBuilder = new Villa[4];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(257700),
+                            getWeekValuesFor(215200),
+                            getWeekValuesFor(139700)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(51700)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "Hotel Room", starOptionsBuilder, seasonsOfPhases[1]);
+                    phaseBuilder[1] = new Phase(namesOfPhases[1], seasonsOfPhases[1], weeksOfPhases[1], villaBuilder);
+                }
+                break;
+                case WESTIN_CANCUN: {
+                    this.resortLocation = "Cancun, Mexico";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS}};
+                    weeksOfPhases = new int[][][]{{{5, 17, 24, 35, 44, 47, 51, 52}, {1, 4, 18, 23, 36, 43, 48, 50}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(215200),
+                            getWeekValuesFor(118000)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom (Oceanside or Lagoon Side)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(81000)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom (Oceanside or Lagoon Side)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "Studio (Oceanside or Lagoon Side)", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_DESERT: {
+                    this.resortLocation = "Palm Desert, California";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS, Season.GOLD}};
+                    weeksOfPhases = new int[][][]{{{1, 21, 50, 52}, {22, 27, 36, 49}, {28, 35}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(56300)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(30500)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_KAANAPALI:
+                case WESTIN_KAANAPALI_NORTH: {
+                    this.resortLocation = "Lahaina, Maui, Hawai'i";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS}};
+                    weeksOfPhases = new int[][][]{{{1, 52}}};
+                    villaBuilder = new Villa[6];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff (Oceanfront)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(95700)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium (Oceanfront)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000)};
+                    villaBuilder[4] = new Villa(RoomType.ONE_BD, "Studio Premium (Oceanfront)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100)};
+                    villaBuilder[5] = new Villa(RoomType.ONE_BD, "Studio Premium", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_LAGUNAMAR: {
+                    this.resortLocation = "Cancun, Mexico";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS}};
+                    weeksOfPhases = new int[][][]{{{5, 17, 24, 35, 44, 47, 51, 52}, {1, 4, 18, 23, 36, 43, 48, 50}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(81000)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "Studio Premium", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_MISSION: {
+                    this.resortLocation = "Rancho Mirage, California";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.GOLD_PLUS, Season.GOLD}};
+                    weeksOfPhases = new int[][][]{{{1, 21, 50, 52}, {22, 27, 36, 49}, {28, 35}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(56300)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(30500)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(37000),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_NANEA: {
+                    this.resortLocation = "Lahaina, Maui, Hawai'i";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS}};
+                    weeksOfPhases = new int[][][]{{{1, 52}}};
+                    villaBuilder = new Villa[4];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(257700)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom (Oceanfront)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Premium (Oceanfront)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100)};
+                    villaBuilder[2] = new Villa(RoomType.TWO_BD, "Two-Bedroom Premium (Resort View)", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium (Resort View)", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_PRINCEVILLE: {
+                    this.resortLocation = "Princeville, Kaua'i, Hawai'i";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS}};
+                    weeksOfPhases = new int[][][]{{{1, 52}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "Studio Premium", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
+                case WESTIN_RIVERFRONT: {
+                    this.resortLocation = "Avon, Colorado";
+                    phaseBuilder = new Phase[1];
+                    namesOfPhases = new String[]{DEFAULT_PHASE_NAME};
+                    seasonsOfPhases = new Season[][]{{Season.PLATINUM_PLUS, Season.PLATINUM, Season.SILVER}};
+                    weeksOfPhases = new int[][][]{{{1, 15, 48, 52}, {21, 39}, {16, 20, 40, 47}}};
+                    villaBuilder = new Villa[3];
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(46500)};
+                    villaBuilder[0] = new Villa(RoomType.TWO_BD, "Two-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(51700),
+                            getWeekValuesFor(25800)};
+                    villaBuilder[1] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000),
+                            getWeekValuesFor(20700)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "Studio Premium", starOptionsBuilder, seasonsOfPhases[0]);
+                    phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
+                }
+                break;
                 case WESTIN_STJOHN: {
                     this.resortLocation = "St. John, U.S. Virgin Islands";
-                    phaseBuilder = new Phase[2];
+                    phaseBuilder = new Phase[4];
                     namesOfPhases = new String[]{
                             "Virgin Grand",
-                            "Bay Vista"
+                            "Bay Vista",
+                            "Coral Vista",
+                            "Sunset Bay"
                     };
                     seasonsOfPhases = new Season[][]{
-                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD},
-                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD}
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS},
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS},
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS},
+                            {Season.PLATINUM_PLUS, Season.PLATINUM, Season.GOLD_PLUS}
                     };
                     weeksOfPhases = new int[][][]{
                             {{1, 15, 51, 52},{16, 20, 43, 50},{21, 42}},
+                            {{1, 18, 51, 52},{19, 33},{34, 50}},
+                            {{1, 18, 51, 52},{19, 33},{34, 50}},
                             {{1, 18, 51, 52},{19, 33},{34, 50}}
                     };
 
                     villaBuilder = new Villa[4];
                     starOptionsBuilder = new int[][]{
-                            { 25770,  38655,  51540},
-                            { 19700,  29525,  39375},
-                            { 12500,  18750,  25000}};
+                            getWeekValuesFor(257700),
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(125000)};
                     villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
 
                     starOptionsBuilder = new int[][]{
-                            { 17670,  26505,  35340},
-                            { 14800,  22225,  29625},
-                            {  9550,  14375,  19150}};
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
                     villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[0]);
 
                     starOptionsBuilder = new int[][]{
-                            {  9550,  14375,  19150},
-                            {  8100,  12150,  16200},
-                            {  5150,   7775,  10350}};
+                            getWeekValuesFor(95700),
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(51700)};
                     villaBuilder[2] = new Villa(RoomType.ONE_BD, "One-Bedroom Premium", starOptionsBuilder, seasonsOfPhases[0]);
 
                     starOptionsBuilder = new int[][]{
-                            {  8100,  12150,  16200},
-                            {  6700,  10075,  13425},
-                            {  4400,   6600,   8800}};
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000)};
                     villaBuilder[3] = new Villa(RoomType.ONE_BD, "Studio Premium", starOptionsBuilder, seasonsOfPhases[0]);
                     phaseBuilder[0] = new Phase(namesOfPhases[0], seasonsOfPhases[0], weeksOfPhases[0], villaBuilder);
 
                     villaBuilder = new Villa[3];
                     starOptionsBuilder = new int[][]{
-                            { 25770,  38655,  51540},
-                            { 19700,  29525,  39375},
-                            { 12500,  18750,  25000}};
+                            getWeekValuesFor(257700),
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(125000)};
                     villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom", starOptionsBuilder, seasonsOfPhases[1]);
 
                     starOptionsBuilder = new int[][]{
-                            { 17670,  26505,  35340},
-                            { 14800,  22225,  29625},
-                            {  9550,  14375,  19150}};
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
                     villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Loft", starOptionsBuilder, seasonsOfPhases[1]);
 
                     starOptionsBuilder = new int[][]{
-                            { 17670,  26505,  35340},
-                            { 14800,  22225,  29625},
-                            {  9550,  14375,  19150}};
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
                     villaBuilder[2] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[1]);
                     phaseBuilder[1] = new Phase(namesOfPhases[1], seasonsOfPhases[1], weeksOfPhases[1], villaBuilder);
+
+                    villaBuilder = new Villa[4];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(257700),
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(125000)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Loft", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
+                    villaBuilder[2] = new Villa(RoomType.TWO_BD, "Two-Bedroom", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[3] = new Villa(RoomType.ONE_BD, "Studio", starOptionsBuilder, seasonsOfPhases[1]);
+                    phaseBuilder[2] = new Phase(namesOfPhases[2], seasonsOfPhases[2], weeksOfPhases[2], villaBuilder);
+
+                    villaBuilder = new Villa[3];
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(257700),
+                            getWeekValuesFor(196900),
+                            getWeekValuesFor(125000)};
+                    villaBuilder[0] = new Villa(RoomType.THREE_BD, "Three-Bedroom Lockoff", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(176700),
+                            getWeekValuesFor(148100),
+                            getWeekValuesFor(95700)};
+                    villaBuilder[1] = new Villa(RoomType.TWO_BD, "Two-Bedroom Loft", starOptionsBuilder, seasonsOfPhases[1]);
+
+                    starOptionsBuilder = new int[][]{
+                            getWeekValuesFor(81000),
+                            getWeekValuesFor(67100),
+                            getWeekValuesFor(44000)};
+                    villaBuilder[2] = new Villa(RoomType.ONE_BD, "Studio", starOptionsBuilder, seasonsOfPhases[1]);
+                    phaseBuilder[3] = new Phase(namesOfPhases[3], seasonsOfPhases[3], weeksOfPhases[3], villaBuilder);
+
                 }
                 break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + resortKeyword);
             }
             this.resortPhases = phaseBuilder;
+        }
+
+        private int[] getWeekValuesFor(int weeklyValue) {
+            int[] arrayOfValues;
+            switch (weeklyValue){
+                case 310900: arrayOfValues = new int[]{31060,46665,62195}; break;
+                case 296200: arrayOfValues = new int[]{29600,44450,59250}; break;
+                case 257700: arrayOfValues = new int[]{25770,38655,51540}; break;
+                case 243800: arrayOfValues = new int[]{24360,36590,48770}; break;
+                case 215200: arrayOfValues = new int[]{21500,32300,43050}; break;
+                case 196900: arrayOfValues = new int[]{19700,29525,39375}; break;
+                case 192100: arrayOfValues = new int[]{19210,28815,38420}; break;
+                case 191400: arrayOfValues = new int[]{19100,28750,38300}; break;
+                case 176700: arrayOfValues = new int[]{17650,26525,35350}; break;
+                case 169700: arrayOfValues = new int[]{16970,25455,33940}; break;
+                case 148100: arrayOfValues = new int[]{14800,22225,29625}; break;
+                case 139700: arrayOfValues = new int[]{13950,20975,27950}; break;
+                case 132700: arrayOfValues = new int[]{13270,19905,26540}; break;
+                case 129800: arrayOfValues = new int[]{13000,19450,25950}; break;
+                case 125000: arrayOfValues = new int[]{12500,18750,25000}; break;
+                case 118000: arrayOfValues = new int[]{11800,17700,23600}; break;
+                case 104100: arrayOfValues = new int[]{10400,15625,20825}; break;
+                case 95700: arrayOfValues = new int[]{9550,14375,19150}; break;
+                case 93000: arrayOfValues = new int[]{9200,14000,18700}; break;
+                case 81000: arrayOfValues = new int[]{8100,12150,16200}; break;
+                case 69800: arrayOfValues = new int[]{6980,10470,13960}; break;
+                case 67200: arrayOfValues = new int[]{6650,10100,13525}; break;
+                case 67100: arrayOfValues = new int[]{6700,10075,13425}; break;
+                case 57700: arrayOfValues = new int[]{5760,8660,11550}; break;
+                case 56300: arrayOfValues = new int[]{5600,8475,11275}; break;
+                case 51700: arrayOfValues = new int[]{5150,7775,10350}; break;
+                case 50000: arrayOfValues = new int[]{5000,7500,10000}; break;
+                case 46500: arrayOfValues = new int[]{4600,7000,9350}; break;
+                case 44000: arrayOfValues = new int[]{4400,6600,8800}; break;
+                case 37000: arrayOfValues = new int[]{3700,5550,7400}; break;
+                case 30500: arrayOfValues = new int[]{3050,4575,6100}; break;
+                case 30000: arrayOfValues = new int[]{3000,4500,6000}; break;
+                case 25800: arrayOfValues = new int[]{2550,3900,5175}; break;
+                case 20700: arrayOfValues = new int[]{2050,3100,4175}; break;
+                case 15000: arrayOfValues = new int[]{1500,2250,3000}; break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + weeklyValue);
+            }
+            return arrayOfValues;
         }
     }
 
@@ -439,12 +1198,16 @@ class  StarOptionsCalculator {
                             seasonValueResultList[k] = resortSearched.resortPhases[i].getSeasonOfPhase(getWeekNumberOfDate(dateSearched));
                             starOptionValueResultList[k] = resortSearched.resortPhases[i].phaseVillas[j].getStarOptionValue(seasonValueResultList[k], dateSearched.getDayOfWeek());
                             dateSearched = dateSearched.plusDays(1);
+
                         }
                         newResult.setSelectedRoomDescription(resortSearched.resortPhases[i].phaseVillas[j]);
                         newResult.setSelectedPhase(resortSearched.resortPhases[i]);
                         newResult.setTotalSeasonValues(seasonValueResultList);
                         newResult.setTotalStarOptionValues(starOptionValueResultList);
                         searchResultsList.add(newResult);
+                        dateSearched = getChosenCheckInDate();
+                        starOptionValueResultList = new int[this.chosenNumberOfNights];
+                        seasonValueResultList = new Season[this.chosenNumberOfNights];
                     }
                 }
             }
@@ -493,23 +1256,6 @@ class  StarOptionsCalculator {
                 counter += totalStarOptionValue;
             }
             return counter;
-        }
-
-        private void displaySearchResult() {
-            System.out.println("Result: " + ResortCode.getResortText(selectedResortName) +
-                    ", " + RoomType.getVillaText(selectedTypeOfRoom) + ", " + selectedRoomDescription +
-                    ", for " + selectedCheckInDate.toString() + ", " + selectedNumberOfNights + " nights at " +
-                    selectedPhaseName);
-            System.out.print("SO Values: ");
-            for (int totalStarOptionValue : this.totalStarOptionValues) {
-                System.out.print(totalStarOptionValue + ", ");
-            }
-            System.out.println("totaling: " + getTotalStarOptionValue() + " StarOptions.");
-            System.out.print("SO Seasons: ");
-            for (Season totalSeasonValue : this.totalSeasonValues) {
-                System.out.print(Season.displaySeasonText(totalSeasonValue) + ", ");
-            }
-            System.out.println();
         }
 
         private String displaySearchResultLabel() {
@@ -674,12 +1420,11 @@ class  StarOptionsCalculator {
         }
 
         private void displayResultsOnWindow(){
-            System.out.println("Displaying a total of " + currentResults.size() + " results in Window...");
             resultsPanel.removeAll();
             resultsPanel.setLayout(new GridLayout(9,1,5,5));
-            resultsPanel.add(new JLabel("Total " + currentResults.size() + " matches found."));
+            resultsPanel.add(new JLabel("Total of " + currentResults.size() + " matches found."));
             if (currentResults.size() == 0) {
-                resultsPanel.add(new JLabel(ResortCode.getResortText(pickedResort) + " has no " +
+                resultsPanel.add(new JLabel("This resort has no " +
                         RoomType.getVillaText(pickedRoomType) + " villas, please modify your search."));
             }
             for (SearchResult currentResult : currentResults) {
@@ -694,74 +1439,43 @@ class  StarOptionsCalculator {
             if (action == beginSearch) {
                 currentQuery = new ReservationQuery(pickedResort, LocalDate.of(pickedYear.getValue(), Month.valueOf(pickedMonth), pickedDay),pickedNights,pickedRoomType);
                 currentResults = currentQuery.getSearchResultsList();
-                System.out.println("Search begins for " + ResortCode.getResortText(currentQuery.getChosenResort()) + ", checking in on " +
-                    currentQuery.getChosenCheckInDate().toString() + " for a total of " + currentQuery.getChosenNumberOfNights() +
-                    " nights(s) on a " + RoomType.getVillaText(currentQuery.getChosenTypeOfRoom()));
             }
-            for (SearchResult searchResult : currentResults) searchResult.displaySearchResult();
             displayResultsOnWindow();
         }
 
         @Override
         public void itemStateChanged(ItemEvent itemEvent) {
-            System.out.println("Item State Change Detected on: " + itemEvent.toString());
             Object source = itemEvent.getSource();
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                 if (source == pickResortList) {
                     pickedResort = ResortCode.getResortCode(pickResortList.getSelectedItem().toString());
-                    System.out.println("Selected Resort is: " + pickResortList.getSelectedItem().toString());
-                    System.out.println("Selected Resort Index is: " + pickResortList.getSelectedIndex());
-                    System.out.println("Picked Resort is:" + ResortCode.getResortText(pickedResort));
                 }
                 if (source == pickNightsList) {
                     pickedNights = Integer.parseInt(pickNightsList.getSelectedItem().toString());
-                    System.out.println("Selected Night Amount is: " + pickNightsList.getSelectedItem().toString());
-                    System.out.println("Selected Night Amount Index is: " + pickNightsList.getSelectedIndex());
-                    System.out.println("Picked Night Amount is:" + pickedNights);
                 }
                 if (source == pickRoomList) {
                     pickedRoomType = RoomType.getRoomType(pickRoomList.getSelectedItem().toString());
-                    System.out.println("Selected Room is: " + (pickRoomList.getSelectedItem()).toString());
-                    System.out.println("Selected Room Index is: " + pickRoomList.getSelectedIndex());
-                    System.out.println("Picked Room is:" + RoomType.getVillaText(pickedRoomType));
                 }
                 if (source == pickYearList) {
                     pickedYear = Year.of(Integer.parseInt(pickYearList.getSelectedItem().toString()));
-                    System.out.println("Selected Year is: " + (pickYearList.getSelectedItem()).toString());
-                    System.out.println("Selected Year Index is: " + pickYearList.getSelectedIndex());
-                    System.out.println("Picked Year is:" + pickedYear.toString());
                     if (Month.valueOf(pickedMonth).length(pickedYear.isLeap()) != pickDayList.getItemCount()) {
-                        System.out.println("Amount of days are not equal.");
                         pickDayList.removeAllItems();
-                        System.out.println("Adjusted Days List to " + pickDayList.getItemCount());
                         for (int i = 1 ; i <= Month.valueOf(pickedMonth).length(pickedYear.isLeap()); i++) {
                             pickDayList.addItem(i);
                         }
-                        System.out.println("Days JComboBox now currently has " + pickDayList.getItemCount() + " days ");
                     }
                 }
                 if (source == pickMonthList) {
                     pickedMonth = pickMonthList.getSelectedItem().toString();
-                    System.out.println("Selected Month is: " + (pickMonthList.getSelectedItem()).toString());
-                    System.out.println("Selected Month Index is: " + pickMonthList.getSelectedIndex());
-                    System.out.println("Picked Month is: " + pickedMonth);
-                    System.out.println("Selected month of " + pickedMonth + " has " + Month.valueOf(pickedMonth).maxLength() + " days ");
-                    System.out.println("Days JComboBox currently has " + pickDayList.getItemCount() + " days ");
                     if (Month.valueOf(pickedMonth).length(pickedYear.isLeap()) != pickDayList.getItemCount()) {
-                        System.out.println("Amount of days are not equal.");
                         pickDayList.removeAllItems();
-                        System.out.println("Adjusted Days List to " + pickDayList.getItemCount());
                         for (int i = 1 ; i <= Month.valueOf(pickedMonth).length(pickedYear.isLeap()); i++) {
                             pickDayList.addItem(i);
                         }
-                        System.out.println("Days JComboBox now currently has " + pickDayList.getItemCount() + " days ");
                     }
                 }
                 if (source == pickDayList) {
                     pickedDay = Integer.parseInt(pickDayList.getSelectedItem().toString());
-                    System.out.println("Selected Day is: " + (pickDayList.getSelectedItem()).toString());
-                    System.out.println("Selected Day Index is: " + pickDayList.getSelectedIndex());
-                    System.out.println("Picked Day is: " + pickedDay);
                 }
             }
         }
