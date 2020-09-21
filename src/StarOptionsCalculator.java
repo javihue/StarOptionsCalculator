@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 class  StarOptionsCalculator {
 
@@ -268,7 +269,7 @@ class  StarOptionsCalculator {
 
             int[][] starOptionsBuilder;
             Villa[] villaBuilder;
-            Phase[] phaseBuilder = new Phase[1];
+            Phase[] phaseBuilder;
 
             this.resortName = ResortCode.getResortText(resortKeyword);
 
@@ -1274,7 +1275,12 @@ class  StarOptionsCalculator {
 
     private static class CalculatorWindow extends JFrame implements ItemListener, ActionListener {
 
-        JComboBox pickResortList, pickNightsList, pickRoomList, pickYearList, pickMonthList, pickDayList;
+        JComboBox<String> pickResortList;
+        JComboBox<java.io.Serializable> pickNightsList;
+        JComboBox<java.io.Serializable> pickRoomList;
+        JComboBox<java.io.Serializable> pickYearList;
+        JComboBox<java.io.Serializable> pickMonthList;
+        JComboBox<java.io.Serializable> pickDayList;
         JButton beginSearch = new JButton("Search");
 
         ResortCode pickedResort;
@@ -1331,7 +1337,7 @@ class  StarOptionsCalculator {
         }
 
         private void initializeSearchPanelValues(){
-            pickedResort = ResortCode.getResortCode(pickResortList.getItemAt(0).toString());
+            pickedResort = ResortCode.getResortCode(pickResortList.getItemAt(0));
             pickedDay = Integer.parseInt(pickDayList.getItemAt(0).toString());
             pickedMonth = pickMonthList.getItemAt(0).toString();
             pickedYear = Year.of(Integer.parseInt(pickYearList.getItemAt(0).toString()));
@@ -1341,7 +1347,7 @@ class  StarOptionsCalculator {
 
         private void addResortSelection(){
             ResortCode[] resortCodesList = ResortCode.values();
-            pickResortList = new JComboBox();
+            pickResortList = new JComboBox<>();
             for (ResortCode resortCode : resortCodesList) {
                 pickResortList.addItem(ResortCode.getResortText(resortCode));
             }
@@ -1358,21 +1364,21 @@ class  StarOptionsCalculator {
             selectDatePanel.add(new JLabel("Month", SwingConstants.CENTER));
             selectDatePanel.add(new JLabel("Day", SwingConstants.CENTER));
             selectDatePanel.add(new JLabel("Year", SwingConstants.CENTER));
-            pickMonthList = new JComboBox();
+            pickMonthList = new JComboBox<>();
             centerItemsInJComboBox(pickMonthList);
             for (int i = 0 ; i < Month.values().length; i++) {
                 pickMonthList.addItem(Month.values()[i].toString());
             }
             pickMonthList.addItemListener( this);
             selectDatePanel.add(pickMonthList);
-            pickDayList = new JComboBox();
+            pickDayList = new JComboBox<>();
             centerItemsInJComboBox(pickDayList);
             for (int i = 0; i < Month.valueOf(String.valueOf(pickMonthList.getItemAt(0))).maxLength(); i++) {
                 pickDayList.addItem(i+1);
             }
             pickDayList.addItemListener( this);
             selectDatePanel.add(pickDayList);
-            pickYearList = new JComboBox();
+            pickYearList = new JComboBox<>();
             centerItemsInJComboBox(pickYearList);
             for (int i = EARLIEST_YR_FOR_SEARCH ; i <= LATEST_YR_FOR_SEARCH; i++) {
                 pickYearList.addItem(i);
@@ -1387,7 +1393,7 @@ class  StarOptionsCalculator {
             GridLayout nightsGrid = new GridLayout(1,2,5,5);
             nightsPanel.setLayout(nightsGrid);
             nightsPanel.add(new JLabel("Select Number of Nights: ", SwingConstants.CENTER));
-            pickNightsList = new JComboBox();
+            pickNightsList = new JComboBox<>();
             centerItemsInJComboBox(pickNightsList);
             for (int i = MIN_NIGHT_SEARCH ; i <= MAX_NIGHT_SEARCH; i++) {
                 pickNightsList.addItem(i);
@@ -1402,7 +1408,7 @@ class  StarOptionsCalculator {
             GridLayout villaGrid = new GridLayout(1,2,5,5);
             villaPanel.setLayout(villaGrid);
             villaPanel.add(new JLabel("Select Type of Villa: ", SwingConstants.CENTER));
-            pickRoomList = new JComboBox();
+            pickRoomList = new JComboBox<>();
             centerItemsInJComboBox(pickRoomList);
             RoomType[] roomTypesList = RoomType.values();
             for (RoomType roomType : roomTypesList) {
@@ -1413,7 +1419,7 @@ class  StarOptionsCalculator {
             searchPanel.add(villaPanel);
         }
 
-        private void centerItemsInJComboBox(JComboBox chosenComboBox) {
+        private void centerItemsInJComboBox(JComboBox<java.io.Serializable> chosenComboBox) {
             DefaultListCellRenderer centerItems = new DefaultListCellRenderer();
             centerItems.setHorizontalAlignment(SwingConstants.CENTER);
             chosenComboBox.setRenderer(centerItems);
@@ -1448,16 +1454,16 @@ class  StarOptionsCalculator {
             Object source = itemEvent.getSource();
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                 if (source == pickResortList) {
-                    pickedResort = ResortCode.getResortCode(pickResortList.getSelectedItem().toString());
+                    pickedResort = ResortCode.getResortCode(Objects.requireNonNull(pickResortList.getSelectedItem()).toString());
                 }
                 if (source == pickNightsList) {
-                    pickedNights = Integer.parseInt(pickNightsList.getSelectedItem().toString());
+                    pickedNights = Integer.parseInt(Objects.requireNonNull(pickNightsList.getSelectedItem()).toString());
                 }
                 if (source == pickRoomList) {
-                    pickedRoomType = RoomType.getRoomType(pickRoomList.getSelectedItem().toString());
+                    pickedRoomType = RoomType.getRoomType(Objects.requireNonNull(pickRoomList.getSelectedItem()).toString());
                 }
                 if (source == pickYearList) {
-                    pickedYear = Year.of(Integer.parseInt(pickYearList.getSelectedItem().toString()));
+                    pickedYear = Year.of(Integer.parseInt(Objects.requireNonNull(pickYearList.getSelectedItem()).toString()));
                     if (Month.valueOf(pickedMonth).length(pickedYear.isLeap()) != pickDayList.getItemCount()) {
                         pickDayList.removeAllItems();
                         for (int i = 1 ; i <= Month.valueOf(pickedMonth).length(pickedYear.isLeap()); i++) {
@@ -1466,7 +1472,7 @@ class  StarOptionsCalculator {
                     }
                 }
                 if (source == pickMonthList) {
-                    pickedMonth = pickMonthList.getSelectedItem().toString();
+                    pickedMonth = Objects.requireNonNull(pickMonthList.getSelectedItem()).toString();
                     if (Month.valueOf(pickedMonth).length(pickedYear.isLeap()) != pickDayList.getItemCount()) {
                         pickDayList.removeAllItems();
                         for (int i = 1 ; i <= Month.valueOf(pickedMonth).length(pickedYear.isLeap()); i++) {
@@ -1475,7 +1481,7 @@ class  StarOptionsCalculator {
                     }
                 }
                 if (source == pickDayList) {
-                    pickedDay = Integer.parseInt(pickDayList.getSelectedItem().toString());
+                    pickedDay = Integer.parseInt(Objects.requireNonNull(pickDayList.getSelectedItem()).toString());
                 }
             }
         }
